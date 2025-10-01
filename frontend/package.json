@@ -1,0 +1,17 @@
+{
+  "name": "pixellab-pro",
+  "version": "1.0.0",
+  "description": "Professional image editing application with OpenCV-powered processing tools",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["image-editor", "opencv", "photoshop", "electron", "desktop-app"],
+  "author": "PixelLab Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^38.1.2"
+  }
+}

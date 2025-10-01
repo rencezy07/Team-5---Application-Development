@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PixelLab Pro - Professional Image Editor</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+	<link rel="stylesheet" href="styles.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+</head>
+<body>
+	<!-- Top Menu Bar -->
+	<div class="menu-bar">
+		<div class="menu-item" id="fileMenu">File</div>
+		<div class="menu-item" id="editMenu">Edit</div>
+		<div class="menu-item" id="imageMenu">Image</div>
+		<div class="menu-item" id="filterMenu">Filter</div>
+		<div class="menu-item" id="viewMenu">View</div>
+		<div class="menu-separator"></div>
+		<div class="menu-item" id="helpMenu">Help</div>
+	</div>
+
+	<!-- Main Application Layout -->
+	<div class="app-layout">
+		<!-- Left Tools Panel -->
+		<div class="tools-panel">
+			<button class="tool-button active" id="selectTool" data-tool="select">
+				<i class="fas fa-mouse-pointer"></i>
+				<span class="tooltip">Select Tool</span>
+			</button>
+			<button class="tool-button" id="cropTool" data-tool="crop">
+				<i class="fas fa-crop"></i>
+				<span class="tooltip">Crop Tool</span>
+			</button>
+			<button class="tool-button" id="transformTool" data-tool="transform">
+				<i class="fas fa-arrows-alt"></i>
+				<span class="tooltip">Transform</span>
+			</button>
+			<button class="tool-button" id="colorTool" data-tool="color">
+				<i class="fas fa-palette"></i>
+				<span class="tooltip">Color Adjustments</span>
+			</button>
+			<button class="tool-button" id="filterTool" data-tool="filter">
+				<i class="fas fa-magic"></i>
+				<span class="tooltip">Filters</span>
+			</button>
+			<button class="tool-button" id="edgeTool" data-tool="edge">
+				<i class="fas fa-wave-square"></i>
+				<span class="tooltip">Edge Detection</span>
+			</button>
+			<button class="tool-button" id="thresholdTool" data-tool="threshold">
+				<i class="fas fa-sliders-h"></i>
+				<span class="tooltip">Threshold</span>
+			</button>
+			<button class="tool-button" id="drawTool" data-tool="draw">
+				<i class="fas fa-pencil-alt"></i>
+				<span class="tooltip">Draw Shapes</span>
+			</button>
+			<button class="tool-button" id="arithmeticTool" data-tool="arithmetic">
+				<i class="fas fa-calculator"></i>
+				<span class="tooltip">Arithmetic Ops</span>
+			</button>
+			<button class="tool-button" id="morphTool" data-tool="morph">
+				<i class="fas fa-expand"></i>
+				<span class="tooltip">Morphology</span>
+			</button>
+			<button class="tool-button" id="histogramTool" data-tool="histogram">
+				<i class="fas fa-chart-bar"></i>
+				<span class="tooltip">Histogram</span>
+			</button>
+			<button class="tool-button" id="denoiseTool" data-tool="denoise">
+				<i class="fas fa-broom"></i>
+				<span class="tooltip">Denoise</span>
+			</button>
+		</div>
+
+		<!-- Central Canvas Area -->
+		<div class="canvas-area">
+		<!-- Canvas Toolbar -->
+		<div class="canvas-toolbar">
+			<div class="zoom-controls">
+				<button class="zoom-button" id="zoomOut">-</button>
+				<div class="zoom-display" id="zoomLevel">100%</div>
+				<button class="zoom-button" id="zoomIn">+</button>
+				<button class="zoom-button" id="zoomFit">
+					<i class="fas fa-expand-arrows-alt"></i>
+				</button>
+			</div>
+			<div style="flex: 1;"></div>
+			<div style="display: flex; gap: 8px;">
+				<button class="button secondary" id="batchBtn">
+					<i class="fas fa-layer-group"></i> Batch
+				</button>
+				<button class="button secondary" id="compareBtn">
+					<i class="fas fa-columns"></i> Compare
+				</button>
+				<button class="button secondary" id="exitCompareBtn" style="display: none;">
+					<i class="fas fa-times"></i> Exit Compare
+				</button>
+				<button class="button secondary" id="exportBtn">
+					<i class="fas fa-download"></i> Export
+				</button>
+				<button class="button secondary" id="undoBtn">
+					<i class="fas fa-undo"></i> Undo
+				</button>
+				<button class="button secondary" id="redoBtn">
+					<i class="fas fa-redo"></i> Redo
+				</button>
+			</div>
+		</div>			<!-- Main Canvas -->
+			<div class="canvas-container">
+				<div class="canvas-viewport" id="canvasViewport">
+					<div class="canvas-content" id="canvasContent">
+						<div class="drop-zone" id="dropZone">
+							<div class="drop-zone-icon">
+								<i class="fas fa-cloud-upload-alt"></i>
+							</div>
+							<div class="drop-zone-text">Drop image here or click to browse</div>
+							<div class="drop-zone-hint">Supports JPG, PNG, GIF, BMP</div>
+						</div>
+						<img class="canvas-image" id="canvasImage" style="display: none;">
+						
+						<!-- Comparison Mode Container -->
+						<div class="comparison-container" id="comparisonContainer" style="display: none;">
+							<div class="comparison-panel">
+								<div class="comparison-header">
+									<i class="fas fa-image"></i>
+									<span>Original Image</span>
+								</div>
+								<div class="comparison-image-container">
+									<img class="comparison-image" id="originalComparisonImage">
+								</div>
+							</div>
+							<div class="comparison-divider"></div>
+							<div class="comparison-panel">
+								<div class="comparison-header processed">
+									<i class="fas fa-magic"></i>
+									<span id="processedLabel">Processed Image</span>
+								</div>
+								<div class="comparison-image-container">
+									<img class="comparison-image" id="processedComparisonImage">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Loading Overlay -->
+			<div class="loading-overlay" id="loadingOverlay">
+				<div class="loading-spinner"></div>
+				<div class="loading-text">Processing image...</div>
+			</div>
+		</div>
+
+		<!-- Right Properties Panel -->
+		<div class="properties-panel">
+			<div class="panel-header" id="propertiesHeader">Properties</div>
+			<div class="panel-content" id="propertiesContent">
+				<div class="control-group">
+					<label class="control-label">No tool selected</label>
+					<p style="color: var(--text-muted); font-size: 14px; line-height: 1.4;">
+						Select a tool from the left panel to see its options here.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- History Panel -->
+		<div class="history-panel">
+			<div class="panel-header">History</div>
+			<div class="history-list" id="historyList">
+				<div class="history-item active">
+					<i class="fas fa-image history-icon"></i>
+					<span>Original Image</span>
+				</div>
+			</div>
+			<div class="history-controls">
+				<button class="button secondary" id="clearHistory">Clear</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Hidden File Input -->
+	<input type="file" id="fileInput" accept="image/*" style="display: none;">
+	<input type="file" id="batchFileInput" accept="image/*" multiple style="display: none;">
+
+	<!-- Batch Processing Modal -->
+	<div class="modal" id="batchModal" style="display: none;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3>Batch Processing</h3>
+				<button class="modal-close" id="closeBatchModal">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="batch-upload-area">
+					<div class="drop-zone-small" id="batchDropZone">
+						<i class="fas fa-images"></i>
+						<p>Drop multiple images here or click to select</p>
+						<small>Up to 10 images (PNG, JPG, GIF)</small>
+					</div>
+				</div>
+				<div class="batch-options">
+					<label>Operation:</label>
+					<select id="batchOperation">
+						<option value="grayscale">Grayscale</option>
+						<option value="blur">Blur</option>
+						<option value="sharpen">Sharpen</option>
+						<option value="canny">Edge Detection</option>
+						<option value="threshold">Threshold</option>
+						<option value="histogram_equalize">Histogram Equalization</option>
+						<option value="denoise">Denoise</option>
+					</select>
+				</div>
+				<div class="batch-preview" id="batchPreview" style="display: none;">
+					<h4>Selected Images:</h4>
+					<div class="image-grid" id="imageGrid"></div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="button secondary" id="cancelBatch">Cancel</button>
+				<button class="button primary" id="processBatch" disabled>Process Images</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Export Modal -->
+	<div class="modal" id="exportModal" style="display: none;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3>Export Image</h3>
+				<button class="modal-close" id="closeExportModal">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="export-options">
+					<label>Format:</label>
+					<select id="exportFormat">
+						<option value="png">PNG</option>
+						<option value="jpg">JPEG</option>
+						<option value="pdf">PDF</option>
+					</select>
+					
+					<div id="qualitySection" style="display: none;">
+						<label>Quality (1-100):</label>
+						<input type="range" id="exportQuality" min="1" max="100" value="95">
+						<span id="qualityValue">95</span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="button secondary" id="cancelExport">Cancel</button>
+				<button class="button primary" id="confirmExport">Export</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Batch Results Modal -->
+	<div class="modal" id="batchResultsModal" style="display: none;">
+		<div class="modal-content large">
+			<div class="modal-header">
+				<h3>Batch Processing Results</h3>
+				<button class="modal-close" id="closeBatchResults">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="results-summary" id="resultsSummary"></div>
+				<div class="results-grid" id="resultsGrid"></div>
+			</div>
+			<div class="modal-footer">
+				<button class="button secondary" id="closeBatchResultsBtn">Close</button>
+				<button class="button primary" id="downloadBatchResults">Download All</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="renderer.js"></script>
+</body>
+</html>
