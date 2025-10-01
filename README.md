@@ -1,8 +1,8 @@
 # PixelLab Pro - Professional Image Editor
 
 Members:
-LAURENCE JAY PEREZ
-JUSALYN GIMAO
+LAURENCE JAY PEREZ,
+JUSALYN GIMAO,
 MIA LOLOR
 
 A modern, Photoshop-style desktop application for professional image editing and processing, powered by OpenCV and built with Electron.js.
@@ -115,4 +115,5 @@ npm run dev
 ---
 
 Experience professional image editing with the power of OpenCV! 🎉
+
 
